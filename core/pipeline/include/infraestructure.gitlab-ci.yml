@@ -1,0 +1,11 @@
+.infraestructure_init:
+  script:
+    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/init.yml
+
+.infraestructure_create:
+  script:
+    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/create.yml
+
+.infraestructure_delete:
+  script:
+    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/delete.yml

@@ -5,8 +5,8 @@
   tasks:
     - name: Initialize terraform project
       ansible.builtin.shell: |
-        terraform -chdir=$CI_PROJECT_DIR/terraform init
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform init
     
     - name: Validate terraform configuration
       ansible.builtin.shell: |
-        terraform -chdir=$CI_PROJECT_DIR/terraform validate
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform validate

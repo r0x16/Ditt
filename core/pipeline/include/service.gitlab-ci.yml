@@ -4,6 +4,6 @@ variables:
 
 .service:
   script:
-    - 'ansible-playbook -i inventory.txt $CI_PROJECT_DIR/pipeline/playbook/service/ping.yml'
+    - 'ansible-playbook -i inventory.txt $CI_PROJECT_DIR/core/pipeline/playbook/service/ping.yml'
     - 'if [ -f $CUSTOM_AFTER ]; then ansible-playbook $CUSTOM_AFTER; fi;'
     - 'if [ -f $CUSTOM_INSTALL ]; then ansible-playbook -i inventory.txt $CUSTOM_INSTALL; fi;'
