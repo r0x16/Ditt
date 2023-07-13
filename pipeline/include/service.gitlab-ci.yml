@@ -1,0 +1,9 @@
+variables:
+  CUSTOM_AFTER: '$CI_PROJECT_DIR/deploy/after_create.yml'
+  CUSTOM_INSTALL: '$CI_PROJECT_DIR/deploy/service_install.yml'
+
+.service:
+  script:
+    - 'ansible-playbook -i inventory.txt $CI_PROJECT_DIR/pipeline/playbook/service/ping.yml'
+    - 'if [ -f $CUSTOM_AFTER ]; then ansible-playbook $CUSTOM_AFTER; fi;'
+    - 'if [ -f $CUSTOM_INSTALL ]; then ansible-playbook -i inventory.txt $CUSTOM_INSTALL; fi;'

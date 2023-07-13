@@ -3,7 +3,7 @@
 
 module "PowerfulVirtualMachine" {
   source  = "git.tnschile.com/sistemas/tf-ovirt-vm/ovirt"
-  version = "1.0.0-rc4"
+  version = "1.0.0-rc6"
 
   # Base parameters
 

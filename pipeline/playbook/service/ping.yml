@@ -1,0 +1,7 @@
+---
+- name: Ping testing
+  hosts: all
+  remote_user: tns
+  tasks:
+    - name: Ping from the remote server
+      ping:

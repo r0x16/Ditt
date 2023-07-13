@@ -1,0 +1,12 @@
+---
+- name: Prepares project for infrastructure deployment
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Initialize terraform project
+      ansible.builtin.shell: |
+        terraform -chdir=$CI_PROJECT_DIR/terraform init
+    
+    - name: Validate terraform configuration
+      ansible.builtin.shell: |
+        terraform -chdir=$CI_PROJECT_DIR/terraform validate
