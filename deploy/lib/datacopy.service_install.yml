@@ -1,0 +1,13 @@
+---
+- name: Install docker in the created infraestructure
+  hosts: all
+  become: true
+  become_method: sudo
+  remote_user: tns
+  gather_facts: false
+  tasks:
+    - name: Deploy data folder to remote host
+      ansible.builtin.copy:
+        src: ../../data/
+        dest: /home/tns/
+        mode: preserve

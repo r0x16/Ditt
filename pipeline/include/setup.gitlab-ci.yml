@@ -1,0 +1,7 @@
+variables:
+  CUSTOM_BEFORE: '$CI_PROJECT_DIR/deploy/before_create.yml'
+
+.setup:
+  before_script:
+    - 'ansible-playbook $CI_PROJECT_DIR/pipeline/playbook/util/getca.yml'
+    - 'if [ -f $CUSTOM_BEFORE ]; then ansible-playbook $CUSTOM_BEFORE; fi;'

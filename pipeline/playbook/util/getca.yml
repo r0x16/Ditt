@@ -1,0 +1,8 @@
+---
+- name: Obtain oVirt CA certificate
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Download CA certificate from oVirt engine
+      ansible.builtin.shell: |
+        openssl s_client -showcerts -connect $OVIRT_ENGINE_HOSTNAME:$OVIRT_ENGINE_PORT </dev/null 2>/dev/null | openssl x509 -outform PEM > $CI_PROJECT_DIR/cert.pem
