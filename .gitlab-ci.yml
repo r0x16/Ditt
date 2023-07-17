@@ -4,8 +4,8 @@ variables:
 
 # Included files
 include:
-  - local: '/pipeline/include/env.gitlab-ci.yml'
-  - local: '/pipeline/test.gitlab-ci.yml'
+  - local: '/core/pipeline/include/env.gitlab-ci.yml'
+  - local: '/core/pipeline/test.gitlab-ci.yml'
 
 # List of stages for jobs, and their order of execution
 stages:

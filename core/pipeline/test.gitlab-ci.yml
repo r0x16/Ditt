@@ -2,10 +2,10 @@ stages:
   - test
 
 include:
-  - local: '/pipeline/include/setup.gitlab-ci.yml'
-  - local: '/pipeline/include/base.gitlab-ci.yml'
-  - local: '/pipeline/include/infraestructure.gitlab-ci.yml'
-  - local: '/pipeline/include/service.gitlab-ci.yml'
+  - local: '/core/pipeline/include/setup.gitlab-ci.yml'
+  - local: '/core/pipeline/include/base.gitlab-ci.yml'
+  - local: '/core/pipeline/include/infraestructure.gitlab-ci.yml'
+  - local: '/core/pipeline/include/service.gitlab-ci.yml'
 
 .test:
   extends: .base
