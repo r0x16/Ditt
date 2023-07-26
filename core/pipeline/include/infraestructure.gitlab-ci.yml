@@ -9,3 +9,11 @@
 .infraestructure_delete:
   script:
     - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/delete.yml
+
+.infraestructure_archive:
+  script:
+    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/archive.yml
+
+.infraestructure_clear_state:
+  script:
+    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/clear_state.yml
