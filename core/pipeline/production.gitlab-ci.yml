@@ -1,0 +1,48 @@
+stages:
+  - production
+
+include:
+  - local: '/core/pipeline/include/setup.gitlab-ci.yml'
+  - local: '/core/pipeline/include/base.gitlab-ci.yml'
+  - local: '/core/pipeline/include/infraestructure.gitlab-ci.yml'
+  - local: '/core/pipeline/include/service.gitlab-ci.yml'
+
+.production:
+  extends: .base
+  stage: production
+  environment:
+    name: production
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: manual
+
+.production-deploy:
+  extends: .production
+  before_script:
+    - !reference [.setup, before_script]
+  script:
+    - !reference [.infraestructure_init, script]
+    - !reference [.infraestructure_create, script]
+    - !reference [.service, script]
+
+.production-redeploy:
+  extends: .production
+  before_script:
+    - !reference [.setup, before_script]
+  script:
+    - !reference [.infraestructure_init, script]
+    - !reference [.infraestructure_delete, script]
+    - !reference [.infraestructure_create, script]
+    - !reference [.service, script]
+
+.production-safe-redeploy:
+  extends: .production
+  before_script:
+    - !reference [.setup, before_script]
+  script:
+    - !reference [.infraestructure_init, script]
+    - !reference [.infraestructure_archive, script]
+    - !reference [.infraestructure_clear_state, script]
+    - !reference [.infraestructure_create, script]
+    - !reference [.service, script]
+

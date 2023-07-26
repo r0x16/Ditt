@@ -1,0 +1,17 @@
+---
+- name: Archives current infraestructure in a new state
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Changes current state to an archive
+      ansible.builtin.shell: |
+        terraform init \
+        -migrate-state \
+        -backend-config=address="$TF_HTTP_ADDRESS-$CI_COMMIT_SHORT_SHA" \
+        -backend-config=lock_address="$TF_HTTP_ADDRESS-$CI_COMMIT_SHORT_SHA/lock" \
+        -backend-config=unlock_address="$TF_HTTP_ADDRESS-$CI_COMMIT_SHORT_SHA/lock" \
+        -backend-config=username="$TF_HTTP_USERNAME" \
+        -backend-config=password="$TF_HTTP_PASSWORD" \
+        -backend-config=lock_method="$TF_HTTP_LOCK_METHOD" \
+        -backend-config=unlock_method="$TF_HTTP_UNLOCK_METHOD" \
+        -backend-config=retry_wait_min="$TF_HTTP_RETRY_WAIT_MIN"
