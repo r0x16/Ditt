@@ -8,5 +8,5 @@
         url: "{{ lookup('env', 'TF_HTTP_ADDRESS') }}"
         method: DELETE
         headers:
-          Private-Token: "{{ lookup('env', 'TF_HTTP_PASSWORD') }}"
+          Private-Token: "{{ lookup('env', 'secret_GLOBAL_API_TOKEN') }}"
 
