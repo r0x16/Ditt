@@ -4,7 +4,7 @@ storage_domain = "ds_GITOPS_L304_HUAWEI5300"
 
 network_parameters = {
   hostname = "localhost.localdomain"
-  network  = "VLAN_2004-TNS"
+  network  = "ovirtmgmt"
   ip       = "10.248.228.108" # replace with your own IP
   netmask  = "255.255.255.0"
   gateway  = "10.248.227.254"
