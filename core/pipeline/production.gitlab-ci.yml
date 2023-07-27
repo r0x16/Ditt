@@ -43,6 +43,6 @@ include:
     - !reference [.infraestructure_init, script]
     - !reference [.infraestructure_archive, script]
     - !reference [.infraestructure_clear_state, script]
+    - !reference [.infraestructure_init, script]
     - !reference [.infraestructure_create, script]
     - !reference [.service, script]
-

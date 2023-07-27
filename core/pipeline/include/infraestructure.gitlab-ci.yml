@@ -17,3 +17,7 @@
 .infraestructure_clear_state:
   script:
     - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/clear_state.yml
+
+.infraestructure_show:
+  script:
+    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/show.yml

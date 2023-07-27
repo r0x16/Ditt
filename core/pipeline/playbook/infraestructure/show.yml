@@ -1,0 +1,18 @@
+---
+- name: Shoiw current state of terraform
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Shows state from resource
+      ansible.builtin.shell: |
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform state list
+    
+    - name: Shows state from module
+      ansible.builtin.shell: |
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform state show \
+        'module.PowerfulVirtualMachine.ovirt_vm.virtual_machine' \
+        | grep -oP '\s+id\s*=\s*"\K[^"]+'
+      register: vm_id
+    
+    - ansible.builtin.debug:
+        msg: "{{ vm_id.stdout }}"
