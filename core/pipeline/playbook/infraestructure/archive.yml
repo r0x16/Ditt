@@ -3,10 +3,26 @@
   hosts: localhost
   gather_facts: false
   tasks:
+    
+    - name: Rename current virtual machine
+      ansible.builtin.shell: |
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform apply \
+        -var-file="$CI_PROJECT_DIR/environments/$CI_ENVIRONMENT_NAME.tfvars" \
+        -var="suffix=_$CI_COMMIT_SHORT_SHA" \
+        -auto-approve
+    
+    - name: Gets VM id from terraform state
+      ansible.builtin.shell: |
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform state show \
+        'module.PowerfulVirtualMachine.ovirt_vm.virtual_machine' \
+        | grep -oP '\s+id\s*=\s*"\K[^"]+'
+      register: vm_id
+
     - name: Changes current state to an archive
       ansible.builtin.shell: |
-        terraform init \
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform init \
         -migrate-state \
+        -force-copy \
         -backend-config=address="$TF_HTTP_ADDRESS-$CI_COMMIT_SHORT_SHA" \
         -backend-config=lock_address="$TF_HTTP_ADDRESS-$CI_COMMIT_SHORT_SHA/lock" \
         -backend-config=unlock_address="$TF_HTTP_ADDRESS-$CI_COMMIT_SHORT_SHA/lock" \
@@ -15,3 +31,18 @@
         -backend-config=lock_method="$TF_HTTP_LOCK_METHOD" \
         -backend-config=unlock_method="$TF_HTTP_UNLOCK_METHOD" \
         -backend-config=retry_wait_min="$TF_HTTP_RETRY_WAIT_MIN"
+
+    - name: Authenticate to the oVirt API
+      ovirt_auth:
+        url: "{{ lookup('env', 'OVIRT_ENGINE_URL') }}"
+        username: "{{ lookup('env', 'OVIRT_USERNAME') }}"
+        password: "{{ lookup('env', 'OVIRT_PASSWORD') }}"
+        ca_file: "{{ lookup('env', 'OVIRT_CAFILE') }}"
+    
+    - name: Shutdown virtual machine
+      ovirt_vm:
+        auth: "{{ ovirt_auth }}"
+        id: "{{ vm_id.stdout }}"
+        state: 'stopped'
+        wait: true
+      

@@ -10,3 +10,7 @@
         headers:
           Private-Token: "{{ lookup('env', 'secret_GLOBAL_API_TOKEN') }}"
 
+    - name: Delete current terraform data
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'CI_PROJECT_DIR') }}/core/terraform/.terraform"
+        state: absent
