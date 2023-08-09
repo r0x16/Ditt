@@ -6,7 +6,3 @@
     - name: Plan VM deploy using terraform
       ansible.builtin.shell: |
         terraform -chdir=$CI_PROJECT_DIR/core/terraform apply -var-file="$CI_PROJECT_DIR/environments/$CI_ENVIRONMENT_NAME.tfvars" -auto-approve
-
-    - name: Create Ansible inventory file
-      ansible.builtin.shell: |
-        terraform -chdir=$CI_PROJECT_DIR/core/terraform output -json | jq -r '.ip_address.value' > $CI_PROJECT_DIR/inventory.txt
