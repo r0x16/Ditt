@@ -1,0 +1,20 @@
+# This is a sample playbook to run a command in the production environment
+# The playbook is written in YAML format
+# This playbook is executed on the created infrastructure vm via ssh
+# The playbook is executed before the snapshot that clones virtual machine
+- name: Custom runs before snapshot
+  hosts: all
+  remote_user: tns      # use the user tns to connect to the host
+  gather_facts: false
+  tasks:
+    - name: Upload reboot command
+      ansible.builtin.copy:
+        src: "lib/runoncereboot.sh"
+        dest: "~/runoncereboot.sh"
+        mode: u=rwx
+        owner: tns
+        group: tns
+
+    - name: Run reboot command
+      ansible.builtin.shell: |
+        ~/runoncereboot.sh "sleep 90; sudo cloud-init clean; ip add > ip.txt; sudo poweroff"

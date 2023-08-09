@@ -6,17 +6,41 @@ variables:
 include:
   - local: '/core/pipeline/include/env.gitlab-ci.yml'
   - local: '/core/pipeline/test.gitlab-ci.yml'
+  - local: '/core/pipeline/staging.gitlab-ci.yml'
   - local: '/core/pipeline/production.gitlab-ci.yml'
 
 # List of stages for jobs, and their order of execution
 stages:
+  - inventory
   - test
+  - pre-staging
+  - staging
   - production
 
-# JOBS: 
+# JOBS:
+
+# Test environmnet jobs
 test-deploy:               # This job deploy test environment
   stage: test
   extends: .test-deploy
+
+# Staging environment jobs
+staging-inventory:     # This job refresh inventory
+  stage: inventory
+  extends: .staging-inventory
+
+staging-empty-deploy:
+  stage: staging
+  extends: .staging-empty-deploy
+
+staging-create-via-clone:         # This job deploy staging environment
+  stage: staging
+  extends: .staging-create-via-clone
+
+# Production environment jobs
+production-inventory:     # This job refresh inventory
+  stage: inventory
+  extends: .production-inventory
 
 production-deploy:         # This job deploy production environment
   stage: production

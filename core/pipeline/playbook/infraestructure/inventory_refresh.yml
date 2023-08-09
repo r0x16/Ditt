@@ -1,0 +1,21 @@
+---
+- name: Refresh infrastructure state to obtain outputs
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Refresh infrastructure state
+      ansible.builtin.shell: |
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform apply \
+        -refresh-only \
+        -auto-approve \
+        -var-file="$CI_PROJECT_DIR/environments/$CI_ENVIRONMENT_NAME.tfvars"
+    
+    - name: Export infrastructure outputs
+      ansible.builtin.shell: |
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform output \
+        -json > $CI_PROJECT_DIR/outputs_$CI_ENVIRONMENT_NAME.json
+    
+    - name: Export infrastructure outputs as inventory file
+      ansible.builtin.shell: |
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform output \
+        -json | jq -r '.ip_address.value' > $CI_PROJECT_DIR/inventory_$CI_ENVIRONMENT_NAME.txt

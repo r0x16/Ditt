@@ -10,8 +10,6 @@
 
 - name: Testing install playbook
   hosts: all
-  become: true          # run as root
-  become_method: sudo   # use sudo to become root
   remote_user: tns      # use the user tns to connect to the host
   gather_facts: false
   tasks:

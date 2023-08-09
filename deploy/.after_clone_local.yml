@@ -1,0 +1,74 @@
+# This is a sample playbook to run a command in gitlab runner
+# The playbook is written in YAML format
+# This playbook is executed on the gitlab runner
+# The playbook is executed after of a clone of a snapshot (snapshot not present)
+---
+- name: After clone playbook
+  hosts: localhost
+  gather_facts: false
+  tasks:    
+    - name: Load Destination state outputs
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'OUTPUTS_FILE') }}"
+        name: destVM
+
+    - name: Authenticate to the oVirt API
+      ansible.builtin.ovirt_auth:
+        url: "{{ lookup('env', 'OVIRT_ENGINE_URL') }}"
+        username: "{{ lookup('env', 'OVIRT_USERNAME') }}"
+        password: "{{ lookup('env', 'OVIRT_PASSWORD') }}"
+        ca_file: "{{ lookup('env', 'OVIRT_CAFILE') }}"
+    
+    - name: Unplug virtual NIC
+      ovirt_nic:
+        auth: "{{ ovirt_auth }}"
+        vm: "{{ destVM.vm_name.value }}"
+        name: "nic1"
+        linked: false
+
+    - name: Powering on cloned VM
+      ansible.builtin.ovirt_vm:
+        auth: "{{ ovirt_auth }}"
+        name: "{{ destVM.vm_name.value }}"
+        state: running
+    
+    - name: Waiting for VM to be down
+      ovirt_vm_info:
+        auth: "{{ ovirt_auth }}"
+        pattern: "name={{ destVM.vm_name.value }}"
+      register: result
+      until: (result.ovirt_vms | length > 0) and (result.ovirt_vms[0].status == 'down')
+      retries: 60 # Wait 10 minutes until VM is stopped
+      delay: 10
+    
+    - ansible.builtin.shell: sleep 30
+    
+    - name: plug virtual NIC
+      ovirt_nic:
+        auth: "{{ ovirt_auth }}"
+        vm: "{{ destVM.vm_name.value }}"
+        name: "nic1"
+        linked: true
+    
+    - name: Apply cloud-init
+      ansible.builtin.shell: |
+        ansible-playbook $CI_PROJECT_DIR/core/terraform/.terraform/modules/PowerfulVirtualMachine/ansible/playbook_ovirtVMInitialization.yml
+      environment:
+        VM_NAME: "{{ destVM.vm_name.value }}"
+        VM_STORAGE_DOMAIN: "{{ destVM.storage_domain.value }}"
+        VM_HOSTNAME: "{{ destVM.hostname.value }}"
+        VM_NETWORK: "{{ destVM.network.value }}"
+        VM_NETWORK_PROFILE: "{{ destVM.network_profile.value }}"
+        VM_VNIC_NAME: "nic1"
+        VM_DNS_SERVERS: "{{ destVM.dns.value }}"
+        VM_GUESTNIC_NAME: "{{ destVM.guest_nic_name.value }}"
+        VM_IP_ADDRESS: "{{ destVM.ip_address.value }}"
+        VM_NETMASK: "{{ destVM.netmask.value }}"
+        VM_GATEWAY: "{{ destVM.gateway.value }}"
+        OVIRT_CA_FILE: "{{ lookup('env', 'OVIRT_CAFILE') }}"
+    
+    - name: Powering on finished VM
+      ansible.builtin.ovirt_vm:
+        auth: "{{ ovirt_auth }}"
+        name: "{{ destVM.vm_name.value }}"
+        state: running

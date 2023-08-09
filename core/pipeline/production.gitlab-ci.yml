@@ -23,7 +23,7 @@ include:
   script:
     - !reference [.infraestructure_init, script]
     - !reference [.infraestructure_create, script]
-    - !reference [.service, script]
+    - !reference [.service_deploy, script]
 
 .production-redeploy:
   extends: .production
@@ -33,7 +33,7 @@ include:
     - !reference [.infraestructure_init, script]
     - !reference [.infraestructure_delete, script]
     - !reference [.infraestructure_create, script]
-    - !reference [.service, script]
+    - !reference [.service_deploy, script]
 
 .production-safe-redeploy:
   extends: .production
@@ -45,4 +45,22 @@ include:
     - !reference [.infraestructure_clear_state, script]
     - !reference [.infraestructure_init, script]
     - !reference [.infraestructure_create, script]
-    - !reference [.service, script]
+    - !reference [.service_deploy, script]
+
+.production-inventory:
+  extends: .production
+  artifacts:
+    untracked: false
+    paths:
+      - $CI_PROJECT_DIR/outputs_$CI_ENVIRONMENT_NAME.json
+      - $CI_PROJECT_DIR/inventory_$CI_ENVIRONMENT_NAME.txt
+    when: on_success
+    expire_in: "30 days"
+  before_script:
+    - !reference [.setup, before_script]
+  script:
+    - !reference [.infraestructure_init, script]
+    - !reference [.infraestructure_inventory, script]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always

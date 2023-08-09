@@ -1,0 +1,30 @@
+---
+- name: Create VM snapshot in ovirt
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Load Source VM state outputs
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'OUTPUTS_FROM') }}"
+        name: VM
+
+    - name: Authenticate to the oVirt API
+      ansible.builtin.ovirt_auth:
+        url: "{{ lookup('env', 'OVIRT_ENGINE_URL') }}"
+        username: "{{ lookup('env', 'OVIRT_USERNAME') }}"
+        password: "{{ lookup('env', 'OVIRT_PASSWORD') }}"
+        ca_file: "{{ lookup('env', 'OVIRT_CAFILE') }}"
+
+    - name: Create VM snapshot
+      ansible.builtin.ovirt_snapshot:
+        auth: "{{ ovirt_auth }}"
+        vm_name: "{{ VM.vm_name.value }}"
+        description: "{{ lookup('env', 'CI_COMMIT_SHA') }}"
+        state: present
+        wait: true
+        save_memory: false
+      register: snapshot
+    
+    - ansible.builtin.copy:
+        content: "{{ snapshot }}"
+        dest: "{{ lookup('env', 'CI_PROJECT_DIR') }}/snapshot-{{ lookup('env', 'CI_COMMIT_SHORT_SHA') }}.json"

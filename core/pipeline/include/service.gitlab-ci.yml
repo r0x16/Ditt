@@ -1,9 +1,14 @@
 variables:
   CUSTOM_AFTER: '$CI_PROJECT_DIR/deploy/after_create.yml'
   CUSTOM_INSTALL: '$CI_PROJECT_DIR/deploy/service_install.yml'
+  CUSTOM_TRANSFER: '$CI_PROJECT_DIR/deploy/service_transfer.yml'
 
-.service:
+.service_deploy:
   script:
-    - 'ansible-playbook -i inventory.txt $CI_PROJECT_DIR/core/pipeline/playbook/service/ping.yml'
+    - 'ansible-playbook -i $INVENTORY_FILE $CI_PROJECT_DIR/core/pipeline/playbook/service/ping.yml'
     - 'if [ -f $CUSTOM_AFTER ]; then ansible-playbook $CUSTOM_AFTER; fi;'
-    - 'if [ -f $CUSTOM_INSTALL ]; then ansible-playbook -i inventory.txt $CUSTOM_INSTALL; fi;'
+    - 'if [ -f $CUSTOM_INSTALL ]; then ansible-playbook -i $INVENTORY_FILE $CUSTOM_INSTALL; fi;'
+
+.service_transfer:
+  script:
+    - 'if [ -f $CUSTOM_TRANSFER ]; then ansible-playbook -i $INVENTORY_FROM $CUSTOM_TRANSFER; fi;'
