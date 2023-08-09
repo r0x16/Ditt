@@ -1,0 +1,7 @@
+# This is a sample playbook to run transfer data from another host
+# Usually this playbook is used to transfer data from production to staging
+# The playbook is written in YAML format
+# This playbook is executed on the created infrastructure vm via ssh
+
+- name: Copy data folder from remote host
+  ansible.builtin.import_playbook: lib/datacopy.service_transfer.yml

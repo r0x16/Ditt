@@ -1,0 +1,28 @@
+---
+- name: Copy production data folder to management local repository
+  hosts: all
+  remote_user: tns
+  gather_facts: false
+  tasks:
+    - name: Compress data folder
+      ansible.builtin.archive:
+        path: /home/tns/
+        dest: /tmp/data.tar.gz
+        format: gz
+        owner: tns
+        group: tns
+        mode: 0644
+
+    - name: Transfer data folder to local repository
+      ansible.builtin.fetch:
+        src: /tmp/data.tar.gz
+        dest: data.tar.gz
+        flat: yes
+        validate_checksum: yes
+        fail_on_missing: yes
+    
+    - name: Uncompress data folder
+      ansible.builtin.unarchive:
+        src: data.tar.gz
+        dest: ../../data/
+      delegate_to: localhost

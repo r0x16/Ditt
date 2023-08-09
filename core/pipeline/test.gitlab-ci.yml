@@ -8,6 +8,8 @@ include:
   - local: '/core/pipeline/include/service.gitlab-ci.yml'
 
 .test:
+  variables:
+    INVENTORY_FILE: '$CI_PROJECT_DIR/inventory_test.txt'
   extends: .base
   stage: test
   environment:
@@ -21,8 +23,13 @@ include:
     - !reference [.infraestructure_init, script]
     - !reference [.infraestructure_delete, script]
     - !reference [.infraestructure_create, script]
-    - !reference [.service, script]
+    - !reference [.service_deploy, script]
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: manual
-      allow_failure: true
+  allow_failure: true
+  artifacts:
+    when: on_success
+    expire_in: never
+    paths:
+      - $INVENTORY_FILE

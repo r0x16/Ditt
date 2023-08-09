@@ -1,23 +1,43 @@
+variables:
+  CUSTOM_BEFORE_SNAPSHOT: '$CI_PROJECT_DIR/deploy/before_snapshot.yml'
+  CUSTOM_BEFORE_SNAPSHOT_LOCAL: '$CI_PROJECT_DIR/deploy/before_snapshot_local.yml'
+  CUSTOM_AFTER_SNAPSHOT: '$CI_PROJECT_DIR/deploy/after_snapshot.yml'
+  CUSTOM_AFTER_SNAPSHOT_LOCAL: '$CI_PROJECT_DIR/deploy/after_snapshot_local.yml'
+  CUSTOM_AFTER_CLONE: '$CI_PROJECT_DIR/deploy/after_clone.yml'
+  CUSTOM_AFTER_CLONE_LOCAL: '$CI_PROJECT_DIR/deploy/after_clone_local.yml'
+
 .infraestructure_init:
-  script:
-    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/init.yml
+  script: ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/init.yml
 
 .infraestructure_create:
-  script:
-    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/create.yml
+  script: ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/create.yml
 
 .infraestructure_delete:
-  script:
-    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/delete.yml
+  script: ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/delete.yml
 
 .infraestructure_archive:
-  script:
-    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/archive.yml
+  script: ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/archive.yml
 
 .infraestructure_clear_state:
-  script:
-    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/clear_state.yml
+  script: ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/clear_state.yml
 
 .infraestructure_show:
-  script:
-    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/show.yml
+  script: ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/show.yml
+
+.infraestructure_inventory:
+  script: ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/inventory_refresh.yml
+
+.infraestructure_snapshot_clone:
+  script: 
+    - 'if [ -f $CUSTOM_BEFORE_SNAPSHOT ]; then ansible-playbook -i $INVENTORY_FROM $CUSTOM_BEFORE_SNAPSHOT; fi;'
+    - 'if [ -f $CUSTOM_BEFORE_SNAPSHOT_LOCAL ]; then ansible-playbook $CUSTOM_BEFORE_SNAPSHOT_LOCAL; fi;'
+    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/snapshot.yml
+    - 'if [ -f $CUSTOM_AFTER_SNAPSHOT ]; then ansible-playbook -i $INVENTORY_FROM $CUSTOM_AFTER_SNAPSHOT; fi;'
+    - 'if [ -f $CUSTOM_AFTER_SNAPSHOT_LOCAL ]; then ansible-playbook $CUSTOM_AFTER_SNAPSHOT_LOCAL; fi;'
+    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/snapshot_clone.yml
+    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/snapshot_remove.yml
+    - 'if [ -f $CUSTOM_AFTER_CLONE ]; then ansible-playbook -i $INVENTORY_TO $CUSTOM_AFTER_CLONE; fi;'
+    - 'if [ -f $CUSTOM_AFTER_CLONE_LOCAL ]; then ansible-playbook $CUSTOM_AFTER_CLONE_LOCAL; fi;'
+
+.infraestructure_import:
+  script: ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/import.yml

@@ -37,6 +37,5 @@ module "PowerfulVirtualMachine" {
   #placement_policy_host_ids = []
   #stop_behavior             = "stop"
   #os_type                   = "ubuntu_14_04"
-  #guest_nic_name            = "ens3"
 
 }

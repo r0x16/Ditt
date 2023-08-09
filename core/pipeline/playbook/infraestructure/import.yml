@@ -1,0 +1,36 @@
+---
+- name: Imports infraestructure to terraform state
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Load Destination state outputs
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'OUTPUTS_FILE') }}"
+        name: destVM
+    
+    - name: Authenticate to the oVirt API
+      ansible.builtin.ovirt_auth:
+        url: "{{ lookup('env', 'OVIRT_ENGINE_URL') }}"
+        username: "{{ lookup('env', 'OVIRT_USERNAME') }}"
+        password: "{{ lookup('env', 'OVIRT_PASSWORD') }}"
+        ca_file: "{{ lookup('env', 'OVIRT_CAFILE') }}"
+    
+    - name: Get VM info
+      ovirt_vm_info:
+        auth: "{{ ovirt_auth }}"
+        pattern: "name={{ destVM.vm_name.value }}"
+      register: result
+    
+    - name: Import virtual machine
+      ansible.builtin.shell: |
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform import \
+        -var-file="$CI_PROJECT_DIR/environments/$CI_ENVIRONMENT_NAME.tfvars"  \
+        module.PowerfulVirtualMachine.ovirt_vm.virtual_machine \
+        {{ result.ovirt_vms[0].id }}
+    
+    - name: Import virtual machine power state
+      ansible.builtin.shell: |
+        terraform -chdir=$CI_PROJECT_DIR/core/terraform import \
+        -var-file="$CI_PROJECT_DIR/environments/$CI_ENVIRONMENT_NAME.tfvars"  \
+        module.PowerfulVirtualMachine.ovirt_vm_start.test \
+        {{ result.ovirt_vms[0].id }}

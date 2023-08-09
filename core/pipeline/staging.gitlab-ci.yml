@@ -1,0 +1,60 @@
+stages:
+  - staging
+
+include:
+  - local: '/core/pipeline/include/setup.gitlab-ci.yml'
+  - local: '/core/pipeline/include/base.gitlab-ci.yml'
+  - local: '/core/pipeline/include/infraestructure.gitlab-ci.yml'
+  - local: '/core/pipeline/include/service.gitlab-ci.yml'
+
+.staging:
+  variables:
+    INVENTORY_FILE: '$CI_PROJECT_DIR/inventory_staging.txt'
+    OUTPUTS_FILE: '$CI_PROJECT_DIR/outputs_staging.json'
+    INVENTORY_FROM: '$CI_PROJECT_DIR/inventory_production.txt'
+    OUTPUTS_FROM: '$CI_PROJECT_DIR/outputs_production.json'
+  extends: .base
+  stage: staging
+  environment:
+    name: staging
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: manual
+
+.staging-inventory:
+  extends: .staging
+  artifacts:
+    untracked: false
+    paths:
+      - $CI_PROJECT_DIR/outputs_$CI_ENVIRONMENT_NAME.json
+      - $CI_PROJECT_DIR/inventory_$CI_ENVIRONMENT_NAME.txt
+    when: on_success
+    expire_in: "30 days"
+  before_script:
+    - !reference [.setup, before_script]
+  script:
+    - !reference [.infraestructure_init, script]
+    - !reference [.infraestructure_inventory, script]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+
+.staging-empty-deploy:
+  extends: .staging
+  before_script:
+    - !reference [.setup, before_script]
+  script:
+    - !reference [.infraestructure_init, script]
+    - !reference [.infraestructure_delete, script]
+    - !reference [.infraestructure_create, script]
+    - !reference [.service_deploy, script]
+
+.staging-create-via-clone:
+  extends: .staging
+  before_script:
+    - !reference [.setup, before_script]
+  script:
+    - !reference [.infraestructure_init, script]
+    - !reference [.infraestructure_delete, script]
+    - !reference [.infraestructure_snapshot_clone, script]
+    - !reference [.infraestructure_import, script]

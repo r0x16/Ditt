@@ -1,0 +1,31 @@
+---
+- name: Clones source VM from snapshot
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Load Source VM state outputs
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'OUTPUTS_FROM') }}"
+        name: sourceVM
+    
+    - name: Load Destination state outputs
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'OUTPUTS_FILE') }}"
+        name: destVM
+
+    - name: Authenticate to the oVirt API
+      ansible.builtin.ovirt_auth:
+        url: "{{ lookup('env', 'OVIRT_ENGINE_URL') }}"
+        username: "{{ lookup('env', 'OVIRT_USERNAME') }}"
+        password: "{{ lookup('env', 'OVIRT_PASSWORD') }}"
+        ca_file: "{{ lookup('env', 'OVIRT_CAFILE') }}"
+
+    - name: Clone from snapshot
+      ansible.builtin.ovirt_vm:
+        auth: "{{ ovirt_auth }}"
+        snapshot_name: "{{ lookup('env', 'CI_COMMIT_SHA') }}"
+        snapshot_vm: "{{ sourceVM.vm_name.value }}"
+        name: "{{ destVM.vm_name.value }}"
+        state: present
+      register: clonedVM
+    
