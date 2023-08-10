@@ -41,6 +41,10 @@ staging-create-via-clone:         # This job deploy staging environment
   stage: staging
   extends: .staging-create-via-clone
 
+staging-service-deploy:
+  stage: staging
+  extends: .staging-service-deploy
+
 # Production environment jobs
 production-inventory:     # This job refresh inventory
   stage: inventory
@@ -57,3 +61,7 @@ production-redeploy:       # This job redeploy production environment
 production-safe-redeploy:  # This job redeploy production environment with archive
   stage: production
   extends: .production-safe-redeploy
+
+production-service-deploy:
+  stage: production
+  extends: .production-service-deploy
