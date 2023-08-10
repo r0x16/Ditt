@@ -15,6 +15,24 @@ include:
   environment:
     name: test
 
+.test-inventory:
+  extends: .test
+  artifacts:
+    untracked: false
+    paths:
+      - $CI_PROJECT_DIR/outputs_$CI_ENVIRONMENT_NAME.json
+      - $CI_PROJECT_DIR/inventory_$CI_ENVIRONMENT_NAME.txt
+    when: on_success
+    expire_in: "30 days"
+  before_script:
+    - !reference [.setup, before_script]
+  script:
+    - !reference [.infraestructure_init, script]
+    - !reference [.infraestructure_inventory, script]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: always
+
 .test-deploy:
   extends: .test
   before_script:

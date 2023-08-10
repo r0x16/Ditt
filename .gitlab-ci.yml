@@ -20,6 +20,10 @@ stages:
 # JOBS:
 
 # Test environmnet jobs
+test-inventory:     # This job refresh inventory
+  stage: inventory
+  extends: .test-inventory
+
 test-deploy:               # This job deploy test environment
   stage: test
   extends: .test-deploy
