@@ -51,6 +51,7 @@ include:
     - !reference [.infraestructure_delete, script]
     - !reference [.infraestructure_create, script]
     - !reference [.service_deploy, script]
+  allow_failure: true
 
 .staging-create-via-clone:
   extends: .staging
@@ -69,9 +70,6 @@ include:
   script:
     - !reference [.infraestructure_init, script]
     - !reference [.service_deploy, script]
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-      when: manual
 
 .staging-destroy:
   extends: .staging
@@ -80,7 +78,4 @@ include:
   script:
     - !reference [.infraestructure_init, script]
     - !reference [.infraestructure_delete, script]
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-      when: manual
   allow_failure: true
