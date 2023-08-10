@@ -8,6 +8,8 @@ include:
   - local: '/core/pipeline/include/service.gitlab-ci.yml'
 
 .production:
+  variables:
+    INVENTORY_FILE: '$CI_PROJECT_DIR/inventory_production.txt'
   extends: .base
   stage: production
   environment:
@@ -64,3 +66,14 @@ include:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: always
+
+.production-service-deploy:
+  extends: .production
+  before_script:
+    - !reference [.setup, before_script]
+  script:
+    - !reference [.infraestructure_init, script]
+    - !reference [.service_deploy, script]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: manual

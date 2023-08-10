@@ -61,3 +61,14 @@ include:
     - !reference [.infraestructure_delete, script]
     - !reference [.infraestructure_snapshot_clone, script]
     - !reference [.infraestructure_import, script]
+
+.staging-service-deploy:
+  extends: .staging
+  before_script:
+    - !reference [.setup, before_script]
+  script:
+    - !reference [.infraestructure_init, script]
+    - !reference [.service_deploy, script]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: manual

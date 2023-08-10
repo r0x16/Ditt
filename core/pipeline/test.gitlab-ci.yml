@@ -43,11 +43,6 @@ include:
     - !reference [.infraestructure_create, script]
     - !reference [.service_deploy, script]
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: manual
-  allow_failure: true
-  artifacts:
-    when: on_success
-    expire_in: never
-    paths:
-      - $INVENTORY_FILE
+  allow_failure: false
