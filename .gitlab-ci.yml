@@ -20,48 +20,56 @@ stages:
 # JOBS:
 
 # Test environmnet jobs
-test-inventory:     # This job refresh inventory
+Testing inventory:     # This job refresh inventory
   stage: inventory
   extends: .test-inventory
 
-test-deploy:               # This job deploy test environment
+Testing deploy:               # This job deploy test environment
   stage: test
   extends: .test-deploy
 
+Testing destroy:              # This job destroy test environment
+  stage: test
+  extends: .test-destroy
+
 # Staging environment jobs
-staging-inventory:     # This job refresh inventory
+Staging inventory:     # This job refresh inventory
   stage: inventory
   extends: .staging-inventory
 
-staging-empty-deploy:
+Staging testing deploy:
   stage: staging
   extends: .staging-empty-deploy
 
-staging-create-via-clone:         # This job deploy staging environment
+Staging create via clone:         # This job deploy staging environment
   stage: staging
   extends: .staging-create-via-clone
 
-staging-service-deploy:
+Staging service deploy:
   stage: staging
   extends: .staging-service-deploy
 
+Staging destroy:              # This job destroy staging environment
+  stage: staging
+  extends: .staging-destroy
+
 # Production environment jobs
-production-inventory:     # This job refresh inventory
+Production inventory:     # This job refresh inventory
   stage: inventory
   extends: .production-inventory
 
-production-deploy:         # This job deploy production environment
+Production deploy:         # This job deploy production environment
   stage: production
   extends: .production-deploy
 
-production-redeploy:       # This job redeploy production environment
+Production redeploy:       # This job redeploy production environment
   stage: production
   extends: .production-redeploy
 
-production-safe-redeploy:  # This job redeploy production environment with archive
+Production safe redeploy:  # This job redeploy production environment with archive
   stage: production
   extends: .production-safe-redeploy
 
-production-service-deploy:
+Production service deploy:
   stage: production
   extends: .production-service-deploy
