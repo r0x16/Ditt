@@ -36,6 +36,7 @@ include:
     - !reference [.infraestructure_delete, script]
     - !reference [.infraestructure_create, script]
     - !reference [.service_deploy, script]
+  allow_failure: true
 
 .production-safe-redeploy:
   extends: .production
