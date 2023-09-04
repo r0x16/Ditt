@@ -1,0 +1,26 @@
+# This is a sample playbook to run nginx server in docker container
+# The playbook is written in YAML format
+# This playbook is executed on the created infrastructure vm via ssh after the infrastructure is created
+- name: After infraestructure creation
+  hosts: all
+  remote_user: tns      # use the user tns to connect to the host
+  gather_facts: false
+  become: true          # become root (sudo)
+  become_method: sudo
+  tasks:
+    - name: Rescan added disks
+      ansible.builtin.shell: |
+        rescan-scsi-bus.sh
+    
+    - name: Create partition
+      ansible.builtin.shell: |
+        pvcreate /dev/sdc
+        vgcreate vg_docker_volumes /dev/sdc
+        lvcreate -l 100%FREE -n lv_docker_volumes vg_docker_volumes
+        mkfs.xfs /dev/vg_docker_volumes/lv_docker_volumes
+        mkdir -p /var/lib/docker/volumes
+        echo "/dev/mapper/vg_docker_volumes-lv_docker_volumes /var/lib/docker/volumes xfs defaults 0 0" >> /etc/fstab
+        mount -a
+    
+    - name: Check mounted volumes
+      ansible.builtin.shell: df -Th
