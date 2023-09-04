@@ -1,4 +1,6 @@
 variables:
+  CUSTOM_IFR_AFTER_CREATE: '$CI_PROJECT_DIR/deploy/after_infraestructure_create.yml'
+  CUSTOM_IFR_AFTER_CREATE_LOCAL: '$CI_PROJECT_DIR/deploy/after_infraestructure_create_local.yml'
   CUSTOM_BEFORE_SNAPSHOT: '$CI_PROJECT_DIR/deploy/before_snapshot.yml'
   CUSTOM_BEFORE_SNAPSHOT_LOCAL: '$CI_PROJECT_DIR/deploy/before_snapshot_local.yml'
   CUSTOM_AFTER_SNAPSHOT: '$CI_PROJECT_DIR/deploy/after_snapshot.yml'
@@ -10,7 +12,10 @@ variables:
   script: ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/init.yml
 
 .infraestructure_create:
-  script: ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/create.yml
+  script: 
+    - ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/create.yml
+    - 'if [ -f $CUSTOM_IFR_AFTER_CREATE_LOCAL ]; then ansible-playbook $CUSTOM_IFR_AFTER_CREATE_LOCAL; fi;'
+    - 'if [ -f $CUSTOM_IFR_AFTER_CREATE ]; then ansible-playbook -i $INVENTORY_FILE $CUSTOM_IFR_AFTER_CREATE; fi;'
 
 .infraestructure_delete:
   script: ansible-playbook $CI_PROJECT_DIR/core/pipeline/playbook/infraestructure/delete.yml

@@ -1,0 +1,29 @@
+# This is a sample playbook to run a command in the runner
+# The playbook is written in YAML format
+# This playbook is executed on the runner after infraestructure creation
+- name: After infraestructure creation local
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Load Destination state outputs
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'OUTPUTS_FILE') }}"
+        name: destVM
+    
+    - name: Authenticate to the oVirt API
+      ansible.builtin.ovirt_auth:
+        url: "{{ lookup('env', 'OVIRT_ENGINE_URL') }}"
+        username: "{{ lookup('env', 'OVIRT_USERNAME') }}"
+        password: "{{ lookup('env', 'OVIRT_PASSWORD') }}"
+        ca_file: "{{ lookup('env', 'OVIRT_CAFILE') }}"
+    
+    - name: Create a new disk for the VM
+      ovirt.ovirt.ovirt_disk:
+        auth: "{{ ovirt_auth }}"
+        name: disk_docker_volumes
+        vm_name: "{{ destVM.vm_name.value }}"
+        size: 20GiB
+        sparse: true
+        format: cow
+        interface: virtio_scsi
+        storage_domain: "{{ destVM.storage_domain.value }}"
