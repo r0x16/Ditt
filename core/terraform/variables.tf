@@ -62,3 +62,71 @@ variable "network_parameters" {
     dns      = "undefined"
   }
 }
+
+# Optional variables
+variable "cpu_cores" {
+  type        = number
+  description = "The number of CPU cores for the VM"
+  default     = 2
+}
+
+variable "cpu_sockets" {
+  type        = number
+  description = "The number of CPU sockets for the VM"
+  default     = 1
+}
+
+variable "cpu_threads" {
+  type        = number
+  description = "The number of CPU threads for the VM"
+  default     = 1
+}
+
+variable "memory" {
+  type        = number
+  description = "The amount of memory for the VM"
+  default     = 4
+}
+
+#type                      = "server"
+  #placement_policy_affinity = "migratable"
+  #placement_policy_host     = ""
+  #placement_policy_host_ids = []
+  #stop_behavior             = "stop"
+  #os_type                   = "ubuntu_14_04"
+
+variable "type" {
+  type        = string
+  description = "The type of the VM"
+  default     = "server"
+}
+
+variable "placement_policy_affinity" {
+  type        = string
+  description = "The placement policy affinity of the VM"
+  default     = "migratable"
+}
+
+variable "placement_policy_host_ids" {
+  type        = list(string)
+  description = "The placement policy host IDs of the VM"
+  default     = []
+}
+
+variable "stop_behavior" {
+  type        = string
+  description = "The stop behavior of the VM"
+  default     = "stop"
+}
+
+variable "os_type" {
+  type        = string
+  description = "The OS type of the VM"
+  default     = "ubuntu_14_04"
+}
+
+variable "template_name" {
+  type        = string
+  description = "The name of the template to use for the VM"
+  default = "Ubuntu22"
+}

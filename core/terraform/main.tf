@@ -9,8 +9,9 @@ module "PowerfulVirtualMachine" {
 
   vm_name        = "${var.project_slug}${var.suffix}"
   cluster_id     = var.cluster_id
-  template_name  = "Ubuntu22"
+  template_name  = var.template_name
   storage_domain = var.storage_domain
+  comment                   = var.comment
 
   # Network parameters
 
@@ -22,20 +23,22 @@ module "PowerfulVirtualMachine" {
   network         = var.network_parameters.network
   network_profile = var.network_parameters.network
 
+  # Resource parameters
+
+  cpu_cores                 = var.cpu_cores
+  cpu_sockets               = var.cpu_sockets
+  cpu_threads               = var.cpu_threads
+  memory                    = var.memory
+  maximum_memory            = var.memory
+
   # Optional parameters
   # Values are set to the default values
 
-  #comment                   = ""
-  #cpu_cores                 = 2
-  #cpu_sockets               = 1
-  #cpu_threads               = 2
-  #memory                    = 4
-  #maximum_memory            = 4
-  #type                      = "server"
-  #placement_policy_affinity = "migratable"
-  #placement_policy_host     = ""
-  #placement_policy_host_ids = []
-  #stop_behavior             = "stop"
-  #os_type                   = "ubuntu_14_04"
+  type                      = var.type
+  placement_policy_affinity = var.placement_policy_affinity
+  # placement_policy_host     = var.placement_policy_host
+  placement_policy_host_ids = var.placement_policy_host_ids
+  stop_behavior             = var.stop_behavior
+  os_type                   = var.os_type
 
 }
