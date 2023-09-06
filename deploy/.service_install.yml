@@ -8,7 +8,7 @@
 - name: Copy data folder to remote host
   ansible.builtin.import_playbook: lib/datacopy.service_install.yml
   vars:
-    src: "{{ lookup('env', 'CI_PROJECT_DIR') }}/data/"
+    src: "{{ lookup('env', 'CI_PROJECT_DIR') }}/deploy/lib/example_data/"
     dst: "/home/tns"
 
 - name: Testing install playbook
