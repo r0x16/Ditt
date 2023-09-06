@@ -41,4 +41,12 @@
         update_cache: true
     
     - name: Grants docker privileges to tns user
-      shell: usermod -aG docker $USER
+      ansible.builtin.user:
+        name: tns
+        append: yes
+        groups: docker
+        state: present
+    
+    - name: Reset ssh connection to allow user changes to affect ansible user
+      ansible.builtin.meta:
+        reset_connection
