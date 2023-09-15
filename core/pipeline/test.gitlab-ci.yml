@@ -8,9 +8,6 @@ include:
   - local: '/core/pipeline/include/service.gitlab-ci.yml'
 
 .test:
-  variables:
-    INVENTORY_FILE: '$CI_PROJECT_DIR/inventory_$CI_ENVIRONMENT_NAME.txt'
-    OUTPUTS_FILE: '$CI_PROJECT_DIR/outputs_$CI_ENVIRONMENT_NAME.json'
   extends: .base
   stage: test
   environment:
