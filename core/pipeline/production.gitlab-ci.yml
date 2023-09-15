@@ -8,8 +8,6 @@ include:
   - local: '/core/pipeline/include/service.gitlab-ci.yml'
 
 .production:
-  variables:
-    INVENTORY_FILE: '$CI_PROJECT_DIR/inventory_production.txt'
   extends: .base
   stage: production
   environment:

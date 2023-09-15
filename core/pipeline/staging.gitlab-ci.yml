@@ -9,8 +9,6 @@ include:
 
 .staging:
   variables:
-    INVENTORY_FILE: '$CI_PROJECT_DIR/inventory_staging.txt'
-    OUTPUTS_FILE: '$CI_PROJECT_DIR/outputs_staging.json'
     INVENTORY_FROM: '$CI_PROJECT_DIR/inventory_production.txt'
     OUTPUTS_FROM: '$CI_PROJECT_DIR/outputs_production.json'
   extends: .base
