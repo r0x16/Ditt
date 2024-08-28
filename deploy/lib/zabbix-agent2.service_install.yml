@@ -1,0 +1,58 @@
+---
+- name: Install Zabbix Agent 2 on created infraestructure
+  hosts: all
+  become: true
+  become_method: sudo
+  remote_user: tns
+  gather_facts: false
+  tasks:
+    - name: Download the Zabbix repository package
+      get_url:
+        url: https://repo.zabbix.com/zabbix/6.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.4-1+ubuntu22.04_all.deb
+        dest: /tmp/zabbix-release_6.4-1+ubuntu22.04_all.deb
+
+    - name: Install the Zabbix repository package
+      apt:
+        deb: /tmp/zabbix-release_6.4-1+ubuntu22.04_all.deb
+
+    - name: Update the package list
+      apt:
+        update_cache: yes
+
+    - name: Install Zabbix Agent 2 and plugins
+      apt:
+        name: 
+          - zabbix-agent2
+          - zabbix-agent2-plugin-*
+        state: present
+    
+    - name: Update Zabbix configuration - Server
+      lineinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        regexp: '^Server='
+        line: 'Server={{ zbxserver }}'
+        state: present
+
+    - name: Update Zabbix configuration - ServerActive
+      lineinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        regexp: '^ServerActive='
+        line: 'ServerActive={{ zbxserveractive }}'
+        state: present
+
+    - name: Update Zabbix configuration - Hostname
+      lineinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        regexp: '^Hostname='
+        line: 'Hostname={{ zbxhostname }}'
+        state: present
+
+    - name: Restart the Zabbix Agent 2 service
+      systemd:
+        name: zabbix-agent2
+        state: restarted
+
+    - name: Enable the Zabbix Agent 2 service to start on boot
+      systemd:
+        name: zabbix-agent2
+        enabled: yes

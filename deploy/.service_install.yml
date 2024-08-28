@@ -5,6 +5,13 @@
 - name: Install Docker
   ansible.builtin.import_playbook: lib/docker.service_install.yml
 
+- name: Install Zabbix Agent 2
+  ansible.builtin.import_playbook: lib/zabbix-agent2.service_install.yml
+  vars:
+    zbxserver: "10.248.228.117"
+    zbxserveractive: "10.248.228.117"
+    zbxhostname: "Zabbix-Host-Name"
+
 - name: Copy data folder to remote host
   ansible.builtin.import_playbook: lib/datacopy.service_install.yml
   vars:
